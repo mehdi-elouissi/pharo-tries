@@ -5,6 +5,25 @@ Class {
 	#package : 'Myg-Chess-Core'
 }
 
+{ #category : 'as yet unclassified' }
+MyPawn >> captureSquares [
+	|front leftDiag rightDiag result|
+	
+	result := OrderedCollection new.
+	
+	front := self isWhite ifTrue: [ square up ] ifFalse: [ square down ].
+	front ifNil: [ ^result ].
+	
+	leftDiag := front left.
+	rightDiag := front right.
+	
+	(leftDiag notNil and: [ leftDiag hasPiece and: [ leftDiag contents color ~= color ] ]) ifTrue: [ result add: leftDiag ].
+	
+	(rightDiag notNil and: [ rightDiag hasPiece and: [ rightDiag contents color ~= color ] ]) ifTrue: [ result add: rightDiag ].
+	
+	^ result 
+]
+
 { #category : 'accessing' }
 MyPawn >> id [
 
@@ -32,6 +51,8 @@ MyPawn >> targetSquaresLegal: aBoolean [
 	square file = startRank ifTrue: [ 
 		next := next perform: direction.
 		(next notNil and: [next hasPiece not]) ifTrue: [ squares add: next ] ].
+	
+	squares addAll: self captureSquares .
 	
 	^squares asArray 
 ]
