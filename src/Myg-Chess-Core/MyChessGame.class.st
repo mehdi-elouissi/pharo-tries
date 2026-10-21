@@ -49,11 +49,21 @@ MyChessGame class >> new [
 	self error: 'Please use one of the other constructors'
 ]
 
+{ #category : 'accessing' }
+MyChessGame >> board [
+	^ board
+]
+
 { #category : 'playing' }
 MyChessGame >> checkForMate [
 
 	whitePlayer king isCheckMated ifTrue: [ self halt: 'Black wins!' ].
 	blackPlayer king isCheckMated ifTrue: [ self halt: 'White wins!' ].
+]
+
+{ #category : 'accessing' }
+MyChessGame >> currentPlayer [
+	^ currentPlayer
 ]
 
 { #category : 'initialization' }
@@ -123,11 +133,19 @@ MyChessGame >> initializeFromFENGame: aFENGame [
 		aLayoutConstraints vertical fitContent ]
 ]
 
+{ #category : 'testing' }
+MyChessGame >> isTurnOf: aPiece [
+	^ aPiece color = currentPlayer color
+]
+
 { #category : 'public' }
 MyChessGame >> move: piece to: square [
-
+	(self isTurnOf: piece) ifFalse: [ ^ self ].
 	piece moveTo: square.
-	self recordMovementOf: piece to: square
+	piece square = square ifFalse: [ ^ self ]. 
+	self recordMovementOf: piece to: square.
+	self switchPlayer.
+	self checkForMate
 ]
 
 { #category : 'accessing' }
@@ -138,14 +156,7 @@ MyChessGame >> pieces [
 
 { #category : 'playing' }
 MyChessGame >> play [
-
-	currentPlayer play.
-	currentPlayer = whitePlayer
-		ifTrue: [ currentPlayer := blackPlayer ]
-		ifFalse: [ 
-			moveCount := moveCount + 1.
-			currentPlayer := whitePlayer ].
-	self checkForMate
+	currentPlayer play
 ]
 
 { #category : 'moves' }
@@ -173,4 +184,13 @@ MyChessGame >> recordMovementOf: aPiece to: aSquare [
 	].
 	
 	movesLabel text: movesText
+]
+
+{ #category : 'as yet unclassified' }
+MyChessGame >> switchPlayer [
+	currentPlayer = whitePlayer
+		ifTrue: [ currentPlayer := blackPlayer ]
+		ifFalse: [
+			moveCount := moveCount + 1.
+			currentPlayer := whitePlayer ]
 ]

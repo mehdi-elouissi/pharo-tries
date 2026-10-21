@@ -13,18 +13,8 @@ MyKing >> attackingSquares [
 
 { #category : 'rendering' }
 MyKing >> basicTargetSquares [
-
-	"The king can move one square on each direction including diagonals"
-	^ {
-		square ifNotNil: #right.
-		square up ifNotNil: #right.
-		square ifNotNil: #up.
-		square up ifNotNil: #left.
-		square ifNotNil: #left.
-		square left ifNotNil: #down.
-		square ifNotNil: #down.
-		square down ifNotNil: #right
-	}
+	^ { square right. square up right. square up. square up left.
+	    square left. square left down. square down. square down right }
 ]
 
 { #category : 'accessing' }
@@ -70,12 +60,6 @@ MyKing >> opponentPieces [
 ]
 
 { #category : 'rendering' }
-MyKing >> renderPieceOn: aSquare [
-
-	^ aSquare renderKing: self
-]
-
-{ #category : 'rendering' }
 MyKing >> targetSquaresLegal: aBoolean [
 	"The king cannot move to threatened squares"
 
@@ -84,7 +68,7 @@ MyKing >> targetSquaresLegal: aBoolean [
 		                     e attackingSquares ].
 
 	^ self basicTargetSquares select: [ :s |
-		  s notNil and: [
+		  s isOnBoard and: [
 			  (threatenedSquares includes: s) not and: [
 				  s hasPiece not or: [ 
 					"The square has an opponent piece"

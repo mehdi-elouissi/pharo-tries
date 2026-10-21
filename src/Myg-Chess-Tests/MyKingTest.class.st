@@ -30,3 +30,14 @@ MyKingTest >> testIsNotCheckBySameColorRook [
 
 	self deny: king isInCheck
 ]
+
+{ #category : 'tests' }
+MyKingTest >> testKnightInCorner [
+	| board knight |
+	board := MyChessBoard empty.
+	board at: 'a1' put: (knight := MyKnight white).
+	self
+		assertCollection: knight targetSquares
+		hasSameElements: (#( b3 c2 ) collect: [ :n | board at: n ])
+
+]

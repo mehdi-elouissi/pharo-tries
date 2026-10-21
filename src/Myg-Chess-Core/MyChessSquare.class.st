@@ -42,7 +42,7 @@ MyChessSquare >> + aPoint [
 	column := (self column asciiValue + aPoint x) asCharacter asString.
 	file := (self file asciiValue + aPoint y) asCharacter asString.
 
-	^ board at: column , file ifAbsent: [ ^ nil ]
+	^ board at: column , file ifAbsent: [ MyOutsideSquare new ]
 ]
 
 { #category : 'accessing' }
@@ -121,6 +121,19 @@ MyChessSquare >> file [
 	^ name second
 ]
 
+{ #category : 'as yet unclassified' }
+MyChessSquare >> fontTable [
+	| table |
+	table := Dictionary new.
+	#( #('K' $K $L) #('Q' $Q $W) #('R' $R $T)
+	   #('B' $B $V) #('N' $N $M) #('P' $P $O) ) do: [ :row |
+		table at: { row first. true. false } put: (row second) asString.
+		table at: { row first. true. true } put: (row second) asLowercase asString.
+		table at: { row first. false. false } put: (row third) asString.
+		table at: { row first. false. true } put: (row third) asLowercase asString ].
+	^ table
+]
+
 { #category : 'accessing' }
 MyChessSquare >> foreground [
 			
@@ -168,6 +181,11 @@ MyChessSquare >> initialize [
 		geometry: BlSquareGeometry new.
 
 	self addEventHandlerOn: BlClickEvent do: [ :e | self click ]
+]
+
+{ #category : 'testing' }
+MyChessSquare >> isOnBoard [ 
+	^ true
 ]
 
 { #category : 'accessing' }
@@ -251,6 +269,11 @@ MyChessSquare >> renderPawn: aPiece [
 			  color isBlack
 				  ifFalse: [ 'P' ]
 				  ifTrue: [ 'p' ] ]
+]
+
+{ #category : 'rendering' }
+MyChessSquare >> renderPiece: aPiece [
+	^ self fontTable at: { aPiece id. aPiece isWhite. color isBlack }
 ]
 
 { #category : 'rendering' }

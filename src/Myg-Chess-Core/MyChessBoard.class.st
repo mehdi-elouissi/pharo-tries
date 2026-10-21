@@ -8,7 +8,8 @@ Class {
 		'state',
 		'whiteColor',
 		'blackColor',
-		'game'
+		'game',
+		'enPassantSquare'
 	],
 	#category : 'Myg-Chess-Core',
 	#package : 'Myg-Chess-Core'
@@ -73,6 +74,16 @@ MyChessBoard >> click: aMyChessSquare [
 	state := state clickOn: aMyChessSquare
 ]
 
+{ #category : 'as yet unclassified' }
+MyChessBoard >> enPassantSquare [
+	^ enPassantSquare
+]
+
+{ #category : 'accessing' }
+MyChessBoard >> enPassantSquare: aSquare [
+	enPassantSquare := aSquare 
+]
+
 { #category : 'accessing' }
 MyChessBoard >> game [
 
@@ -88,7 +99,7 @@ MyChessBoard >> game: aGame [
 { #category : 'highlighting' }
 MyChessBoard >> highLightTargets: squares [
 
-	squares do: [ :sq | sq ifNotNil: #highlightTarget ]
+	squares do: #highlightTarget 
 ]
 
 { #category : 'initialization' }
@@ -238,7 +249,7 @@ MyChessBoard >> selected: aMyChessSquare [
 { #category : 'highlighting' }
 MyChessBoard >> unhighLightTargets: squares [
 
-	squares do: [ :sq | sq ifNotNil: #unhighlightTarget ]
+	squares do: #unhighlightTarget
 ]
 
 { #category : 'selection' }

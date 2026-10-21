@@ -6,22 +6,31 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
+MyPawn >> backwardOf: aSquare [
+	^ self isWhite 
+		ifTrue: [ aSquare down ] 
+		ifFalse: [ aSquare up ].
+]
+
+{ #category : 'testing' }
+MyPawn >> canCaptureOn: aSquare [
+	^ aSquare isOnBoard and: [
+		  (aSquare hasPiece and: [ aSquare contents color ~= color ])
+			  or: [ aSquare = self board enPassantSquare ] ]
+]
+
+{ #category : 'as yet unclassified' }
 MyPawn >> captureSquares [
-	|front leftDiag rightDiag result|
-	
-	result := OrderedCollection new.
-	
-	front := self isWhite ifTrue: [ square up ] ifFalse: [ square down ].
-	front ifNil: [ ^result ].
-	
-	leftDiag := front left.
-	rightDiag := front right.
-	
-	(leftDiag notNil and: [ leftDiag hasPiece and: [ leftDiag contents color ~= color ] ]) ifTrue: [ result add: leftDiag ].
-	
-	(rightDiag notNil and: [ rightDiag hasPiece and: [ rightDiag contents color ~= color ] ]) ifTrue: [ result add: rightDiag ].
-	
-	^ result 
+	| front |
+	front := self forwardOf: square.
+	^ { front left. front right } select: [ :s | self canCaptureOn: s ]
+]
+
+{ #category : 'as yet unclassified' }
+MyPawn >> forwardOf: aSquare [
+	^ self isWhite 
+		ifTrue: [ aSquare up ] 
+		ifFalse: [ aSquare down ].
 ]
 
 { #category : 'accessing' }
@@ -30,10 +39,45 @@ MyPawn >> id [
 	^ 'P'
 ]
 
-{ #category : 'rendering' }
-MyPawn >> renderPieceOn: aSquare [ 
+{ #category : 'testing' }
+MyPawn >> isOnLastRank [
+	^ (self forwardOf: square) isOnBoard not
+]
+
+{ #category : 'path commands' }
+MyPawn >> moveTo: aSquare [
+	|from isEnPassant| 
+	from := square .
+	isEnPassant := aSquare = self board enPassantSquare.
+	super moveTo: aSquare.
 	
-	^ aSquare renderPawn: self
+	square  = aSquare ifFalse: [ ^ self ].
+	
+	isEnPassant ifTrue: [ (self backwardOf: aSquare) emptyContents ].
+	
+	(self forwardOf: (self forwardOf: from )) = aSquare
+		ifTrue: [ self board enPassantSquare: (self forwardOf: from) ].
+		
+	self isOnLastRank ifTrue: [ self promote ]
+	
+	
+	
+	
+]
+
+{ #category : 'as yet unclassified' }
+MyPawn >> promote [
+	| newPiece |
+	newPiece := self isWhite
+		ifTrue: [ self promotionPieceClass white ]
+		ifFalse: [ self promotionPieceClass black ].
+	square contents: newPiece.
+	newPiece square: square
+]
+
+{ #category : 'as yet unclassified' }
+MyPawn >> promotionPieceClass [
+	^ MyQueen
 ]
 
 { #category : 'rendering' }
